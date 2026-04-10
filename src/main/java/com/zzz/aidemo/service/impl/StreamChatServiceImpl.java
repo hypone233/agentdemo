@@ -1,42 +1,51 @@
 package com.zzz.aidemo.service.impl;
 
 import com.zzz.aidemo.service.StreamChatService;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.Disposable;
 
 @Service
 public class StreamChatServiceImpl implements StreamChatService {
+
+    @Autowired
+    private ChatClient chatClient;
+    @Autowired
+    private View error;
+
+
     @Override
     public SseEmitter streamReply(String message) {
         SseEmitter sseEmitter = new SseEmitter(60_000L);
 
-        sseEmitter.onTimeout(()->{
-            System.out.println("SSE 连接超时");
+        Disposable subscription = chatClient.prompt()
+                .user(message)
+                .stream()
+                .content()
+                .subscribe(
+                        content -> {
+                            try {
+                                sseEmitter.send(content);
+                            } catch (Exception ex) {
+                                sseEmitter.completeWithError(ex);
+                            }
+                        },
+                        error -> sseEmitter.completeWithError(error),
+                        sseEmitter::complete
+                );
+        sseEmitter.onTimeout(() -> {
+            subscription.dispose();
             sseEmitter.complete();
         });
+        sseEmitter.onCompletion(subscription::dispose);
 
-        sseEmitter.onCompletion(()->{
-            System.out.println("SSE 连接结束");
-        });
+        sseEmitter.onError(error -> subscription.dispose());
 
-        new Thread(()->{
-            try{
-                String[] parts = {
-                        "收到你的消息：" + message,
-                        "我先简单分析一下...",
-                        "这是第二段模拟回复。",
-                        "本次流式输出结束。"
-                };
-                for(String part: parts){
-                    sseEmitter.send(part);
-                    Thread.sleep(300);
-                }
-                sseEmitter.complete();
-            }catch (Exception e){
-                sseEmitter.completeWithError(e);
-            }
-        }).start();
         return sseEmitter;
+
     }
 
 }
