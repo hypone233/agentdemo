@@ -22,7 +22,7 @@ public class StreamChatController {
     @GetMapping(value = "/stream",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamChat(@RequestBody @Valid ChatRequest chatRequest){
 
-        SseEmitter sseEmitter = streamChatService.streamReply(chatRequest.getUserMessage());
-        return sseEmitter;
+
+        return streamChatService.streamReply(chatRequest);
     }
 }

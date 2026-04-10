@@ -19,7 +19,7 @@ public class ChatController {
 
     @PostMapping("/sync")
     public ChatResponse chatResponse(@Valid @RequestBody ChatRequest chatRequest){
-        String result = chatService.processChat(chatRequest.getUserMessage());
+        String result = chatService.processChat(chatRequest);
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setContent(result);
         return chatResponse;
