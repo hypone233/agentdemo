@@ -1,0 +1,17 @@
+spring:
+  ai:
+    dashscope:
+      api-key: sk-9fb38f328f034feda7bbca59adf9e8d1
+      chat:
+        options:
+          model: qwen-plus
+      embedding:
+        enabled: true
+        options:
+          model: text-embedding-v2
+  datasource:
+    url: jdbc:postgresql://rm-cn-szl4psofk0001kso.rwlb.rds.aliyuncs.com:5432/z_ai_agent
+    username: hypone_233
+    password: 10252788Qwe
+search-api:
+  api-key: CQUr9yNhAtbHzuSAqPZQToJq
