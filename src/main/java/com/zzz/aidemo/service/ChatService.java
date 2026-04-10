@@ -1,4 +1,10 @@
 package com.zzz.aidemo.service;
 
-public class ChatService {
+import org.springframework.stereotype.Service;
+
+
+public interface ChatService {
+
+    public String processChat(String message);
+
 }
