@@ -232,10 +232,9 @@ public abstract class BaseAgent {
      * 清理资源。
      */
     protected void cleanup() {
-
-        if (getState() == AgentState.RUNNING) {
-            setState(AgentState.FINISHED);
-        }
+        setCurrentStep(0);
+        setState(AgentState.IDLE);
+        getMessageList().clear();
     }
 
 

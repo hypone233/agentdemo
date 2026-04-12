@@ -5,6 +5,8 @@ target/
 !**/src/test/**/target/
 
 
+# Local notes and environment-specific config
+teach.md
 src/main/resources/application-local.yml
 ### STS ###
 .apt_generated

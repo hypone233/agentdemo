@@ -33,7 +33,7 @@ public abstract class ReActAgent extends BaseAgent {
             String actionResult = act();
 
 
-            return AgentStepResult.finish(actionResult);
+            return AgentStepResult.next(actionResult);
         } catch (Exception e) {
             logger.error("ReAct step execute error", e);
             return AgentStepResult.finish("步骤执行失败：" + e.getMessage());
