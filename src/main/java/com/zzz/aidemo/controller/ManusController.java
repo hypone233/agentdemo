@@ -20,11 +20,11 @@ public class ManusController {
 
     @GetMapping("/sync")
     public String runSync(@RequestBody @Valid ChatRequest chatRequest) {
-        return zManus.run(chatRequest.getUserMessage());
+        return zManus.run(chatRequest.getUserMessage(),chatRequest.getChatId());
     }
 
     @GetMapping("/stream")
     public SseEmitter runStream(@RequestBody @Valid ChatRequest chatRequest) {
-        return zManus.runStream(chatRequest.getUserMessage());
+        return zManus.runStream(chatRequest.getUserMessage(),chatRequest.getChatId());
     }
 }
