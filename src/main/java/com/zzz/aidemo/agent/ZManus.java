@@ -49,7 +49,7 @@ public class ZManus extends ToolCallAgent {
         setChatClient(chatClient);
     }
 
-    private final Map<String, List<Message>> conversationStore = new ConcurrentHashMap<>();
+   /* private final Map<String, List<Message>> conversationStore = new ConcurrentHashMap<>();
 
     public String run(String userPrompt, String chatId) {
         String conversationId = normalizeChatId(chatId);
@@ -75,15 +75,15 @@ public class ZManus extends ToolCallAgent {
         SseEmitter sseEmitter = super.runStream(userPrompt);
 
         return sseEmitter;
-    }
+    }*/
 
 
 
-    private String normalizeChatId(String chatId) {
+    /*private String normalizeChatId(String chatId) {
         if (chatId == null || chatId.isBlank()) {
             return UUID.randomUUID().toString();
         }
         return chatId.trim();
-    }
+    }*/
 
 }

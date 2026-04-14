@@ -34,6 +34,12 @@ public abstract class BaseAgent {
     private ChatClient chatClient;
 
     /**
+     * 在 cleanup 前执行的钩子。
+     * 主要给外层 service 一个稳定的时机读取最终 messageList。
+     */
+    private Runnable beforeCleanupHook;
+
+    /**
      * 关键点，把运行时数据隔离
      */
     private final AgentContext context = new AgentContext();
@@ -111,6 +117,7 @@ public abstract class BaseAgent {
             logger.error("error executing agent", e);
             return "执行错误：" + e.getMessage();
         }finally {
+            invokeBeforeCleanupHook();
             cleanup();
         }
 
@@ -159,6 +166,7 @@ public abstract class BaseAgent {
                 sendErrorSafely(sseEmitter, e);
                 sseEmitter.completeWithError(e);
             } finally {
+                invokeBeforeCleanupHook();
                 cleanup();
             }
         });
@@ -225,6 +233,20 @@ public abstract class BaseAgent {
             sendEvent(emitter, new AgentEvent(AgentEventType.ERROR, getCurrentStep(),
                     "执行错误：" + exception.getMessage()));
         } catch (IOException ignored) {
+        }
+    }
+
+    /**
+     * 在 Agent 回收运行态之前，给外层一个机会读取最终上下文。
+     */
+    protected void invokeBeforeCleanupHook() {
+        if (beforeCleanupHook == null) {
+            return;
+        }
+        try {
+            beforeCleanupHook.run();
+        } catch (Exception hookException) {
+            logger.error("beforeCleanupHook execute error", hookException);
         }
     }
 

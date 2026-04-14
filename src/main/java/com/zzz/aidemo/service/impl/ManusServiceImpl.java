@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Data
@@ -38,7 +37,7 @@ public class ManusServiceImpl implements ManusService {
 
         ZManus zManus = createAgent();
 
-        zManus.setMessageList(history);
+        zManus.setMessageList(new ArrayList<>(history));
 
         String result = zManus.run(userPrompt);
 
@@ -54,19 +53,10 @@ public class ManusServiceImpl implements ManusService {
         ZManus zManus = createAgent();
         zManus.setMessageList(new ArrayList<>(history));
 
+        zManus.setBeforeCleanupHook(() ->
+                conversationStore.put(conversationId, new ArrayList<>(zManus.getMessageList())));
+
         SseEmitter sseEmitter = zManus.runStream(userPrompt);
-
-        AtomicBoolean saved = new AtomicBoolean(false);
-
-        Runnable saveConversation = () -> {
-            if(saved.compareAndSet(false,true)){
-                conversationStore.put(conversationId,new ArrayList<>(zManus.getMessageList()));
-            }
-        };
-
-        sseEmitter.onCompletion(saveConversation);
-        sseEmitter.onTimeout(saveConversation);
-        sseEmitter.onError(exception -> saveConversation.run());
 
         return sseEmitter;
     }
