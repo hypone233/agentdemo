@@ -234,7 +234,6 @@ public abstract class BaseAgent {
     protected void cleanup() {
         setCurrentStep(0);
         setState(AgentState.IDLE);
-        getMessageList().clear();
     }
 
 
